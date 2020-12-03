@@ -6,25 +6,20 @@ import (
 	"testing"
 )
 
-func Test_getInputFile(t *testing.T) {
+func Test_GetInputFile(t *testing.T) {
 	tests := []struct {
 		name    string
-		want    inputFile
+		want    InputFile
 		wantErr bool
 		osArgs  []string
 	}{
-		{"Default arguments", inputFile{"test.yml"}, false, []string{"cmd", "test.yml"}},
-		{"Missing file name", inputFile{}, true, []string{"cmd"}},
+		{"Default arguments", InputFile{"test.yml"}, false, []string{"cmd", "test.yml"}},
+		{"Missing file name", InputFile{}, true, []string{"cmd"}},
 	}
 	for _, tt := range tests {
-		actualOsArgs := os.Args
-		defer func() {
-			os.Args = actualOsArgs
-		}()
-
 		os.Args = tt.osArgs
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getInputFile()
+			got, err := GetInputFile()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getInputFile() error = %v, wantErr %v", err, tt.wantErr)
 				return
