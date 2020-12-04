@@ -9,7 +9,9 @@ import (
 
 // InputFile defines the structure of a file and options to convert
 type InputFile struct {
-	path string
+	path       string
+	rawData    []byte
+	dataStruct map[interface{}]interface{}
 }
 
 func convertFile(file InputFile, writer chan<- map[string]string) {
@@ -23,7 +25,7 @@ func GetInputFile() (InputFile, error) {
 
 	path := os.Args[1]
 
-	return InputFile{path}, nil
+	return InputFile{path, nil, nil}, nil
 }
 
 // CheckFile checks if user has passed a file with correct extension and

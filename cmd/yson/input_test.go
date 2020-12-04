@@ -13,7 +13,7 @@ func Test_GetInputFile(t *testing.T) {
 		wantErr bool
 		osArgs  []string
 	}{
-		{"Default arguments", InputFile{"test.yml"}, false, []string{"cmd", "test.yml"}},
+		{"Default arguments", InputFile{"test.yml", nil, nil}, false, []string{"cmd", "test.yml"}},
 		{"Missing file name", InputFile{}, true, []string{"cmd"}},
 	}
 	for _, tt := range tests {
