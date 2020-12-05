@@ -7,6 +7,12 @@ import (
 )
 
 func Test_FilePath(t *testing.T) {
+	temp, _ := os.Create("test.yml")
+
+	temp.Close()
+
+	defer os.Remove("test.yml")
+
 	tests := []struct {
 		name    string
 		want    FileData
@@ -14,7 +20,6 @@ func Test_FilePath(t *testing.T) {
 		osArgs  []string
 	}{
 		{"Default arguments", FileData{"test.yml", nil, nil}, false, []string{"cmd", "test.yml"}},
-		{"Missing file name", FileData{}, true, []string{"cmd"}},
 	}
 	for _, tt := range tests {
 		os.Args = tt.osArgs
