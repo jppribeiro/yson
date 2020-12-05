@@ -42,9 +42,9 @@ If you have the executable in your $PATH:
 ```
 yson <filename>.yaml
 ```
+### Options
+[--raw] Prints the raw string instead of the default 'pretty' printed version.
 
-
-By default, the converted string is pretty printed. If you want the raw string, use the ```--raw``` flag:
 ```
 yson --raw <filename>.yaml
 ```
