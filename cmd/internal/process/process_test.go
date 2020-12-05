@@ -15,7 +15,6 @@ b:
 `
 
 func Test_unmarshallData(t *testing.T) {
-
 	wanted := map[string]interface{}{
 		"a": "Easy!",
 		"b": map[string]interface{}{
