@@ -55,7 +55,14 @@ func unmarshallData(file input.FileData) (input.FileData, error) {
 }
 
 func convertToJSON(file input.FileData) (string, error) {
-	jsonString, err := json.Marshal(file.DataStruct)
+	var jsonString []byte
+	var err error
+
+	if file.Raw {
+		jsonString, err = json.Marshal(file.DataStruct)
+	} else {
+		jsonString, err = json.MarshalIndent(file.DataStruct, "", "  ")
+	}
 
 	if err != nil {
 		return "", fmt.Errorf("Could not convert to json. Error: %v", err)

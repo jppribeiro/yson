@@ -1,6 +1,7 @@
 package input
 
 import (
+	"flag"
 	"os"
 	"reflect"
 	"testing"
@@ -19,11 +20,21 @@ func Test_FilePath(t *testing.T) {
 		wantErr bool
 		osArgs  []string
 	}{
-		{"Default arguments", FileData{"test.yml", nil, nil}, false, []string{"cmd", "test.yml"}},
+		{"Default arguments", FileData{"test.yml", false, nil, nil}, false, []string{"cmd", "test.yml"}},
+		{"With <raw> flag", FileData{"test.yml", true, nil, nil}, false, []string{"cmd", "--raw", "test.yml"}},
 	}
 	for _, tt := range tests {
-		os.Args = tt.osArgs
+
 		t.Run(tt.name, func(t *testing.T) {
+			osArgs := os.Args
+
+			defer func() {
+				os.Args = osArgs
+				flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+			}()
+
+			os.Args = tt.osArgs
+
 			got := FilePath()
 
 			if !reflect.DeepEqual(got, tt.want) {

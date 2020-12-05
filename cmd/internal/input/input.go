@@ -2,6 +2,7 @@ package input
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 // FileData defines the structure of a file and options to convert
 type FileData struct {
 	Path       string
+	Raw        bool
 	RawData    []byte
 	DataStruct map[string]interface{}
 }
@@ -24,11 +26,15 @@ func FilePath() FileData {
 		rescuer.Exit(errors.New("specify a file to convert"))
 	}
 
-	path := os.Args[1]
+	raw := flag.Bool("raw", false, "Print raw string")
+
+	flag.Parse()
+
+	path := flag.Arg(0)
 
 	isValid(path)
 
-	return FileData{path, nil, nil}
+	return FileData{path, *raw, nil, nil}
 }
 
 func isValid(filename string) {
