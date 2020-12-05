@@ -1,8 +1,10 @@
-package main
+package process
 
 import (
 	"reflect"
 	"testing"
+
+	"yson.com/yson/cmd/internal/input"
 )
 
 var yamlData = `
@@ -22,15 +24,15 @@ func Test_unmarshallData(t *testing.T) {
 		},
 	}
 
-	args := InputFile{"test.yaml", []byte(yamlData), nil}
+	args := input.FileData{"test.yaml", []byte(yamlData), nil}
 
 	tests := []struct {
 		name    string
-		args    InputFile
-		want    InputFile
+		args    input.FileData
+		want    input.FileData
 		wantErr bool
 	}{
-		{"With good yaml", args, InputFile{"test.yaml", []byte(yamlData), wanted}, false},
+		{"With good yaml", args, input.FileData{"test.yaml", []byte(yamlData), wanted}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -41,19 +43,19 @@ func Test_unmarshallData(t *testing.T) {
 			}
 
 			// got and tt.want will not be equal if compared directly with DeepEqual because
-			// of the interface{} in map of dataStruct
+			// of the interface{} in map of DataStruct
 			// For testing purposes assume that if tt.want["a"] is equal to got["a"]
 			// test is ok; We don't have to test if the structure is ok.
 
-			gotA := got.dataStruct["a"].(string)
-			wantA := tt.want.dataStruct["a"].(string)
+			gotA := got.DataStruct["a"].(string)
+			wantA := tt.want.DataStruct["a"].(string)
 
-			isEqual := (got.path == tt.want.path) &&
-				(reflect.DeepEqual(got.rawData, tt.want.rawData)) &&
+			isEqual := (got.Path == tt.want.Path) &&
+				(reflect.DeepEqual(got.RawData, tt.want.RawData)) &&
 				(reflect.DeepEqual(gotA, wantA))
 
 			if !isEqual {
-				t.Errorf("unmarshallData() = %v, want %v", got.dataStruct, tt.want.dataStruct)
+				t.Errorf("unmarshallData() = %v, want %v", got.DataStruct, tt.want.DataStruct)
 			}
 		})
 	}
@@ -61,7 +63,7 @@ func Test_unmarshallData(t *testing.T) {
 
 func TestConvertToJSON(t *testing.T) {
 	type args struct {
-		file InputFile
+		file input.FileData
 	}
 
 	data := map[string]interface{}{
@@ -75,11 +77,11 @@ func TestConvertToJSON(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		{"Converts map to string", args{InputFile{"test.yaml", []byte{}, data}}, "{\"a\":\"test\",\"b\":[1,2]}", false},
+		{"Converts map to string", args{input.FileData{"test.yaml", []byte{}, data}}, "{\"a\":\"test\",\"b\":[1,2]}", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ConvertToJSON(tt.args.file)
+			got, err := convertToJSON(tt.args.file)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ConvertToJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return

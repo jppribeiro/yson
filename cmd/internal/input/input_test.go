@@ -1,4 +1,4 @@
-package main
+package input
 
 import (
 	"os"
@@ -6,26 +6,23 @@ import (
 	"testing"
 )
 
-func Test_GetInputFile(t *testing.T) {
+func Test_FilePath(t *testing.T) {
 	tests := []struct {
 		name    string
-		want    InputFile
+		want    FileData
 		wantErr bool
 		osArgs  []string
 	}{
-		{"Default arguments", InputFile{"test.yml", nil, nil}, false, []string{"cmd", "test.yml"}},
-		{"Missing file name", InputFile{}, true, []string{"cmd"}},
+		{"Default arguments", FileData{"test.yml", nil, nil}, false, []string{"cmd", "test.yml"}},
+		{"Missing file name", FileData{}, true, []string{"cmd"}},
 	}
 	for _, tt := range tests {
 		os.Args = tt.osArgs
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetInputFile()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("getInputFile() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
+			got := FilePath()
+
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getInputFile() = %v, want %v", got, tt.want)
+				t.Errorf("getFileData() = %v, want %v", got, tt.want)
 			}
 		})
 	}
