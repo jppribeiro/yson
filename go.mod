@@ -1,4 +1,4 @@
-module yson
+module yson.com/yson/cmd/main
 
 go 1.15
 

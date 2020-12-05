@@ -11,7 +11,7 @@ import (
 type InputFile struct {
 	path       string
 	rawData    []byte
-	dataStruct map[interface{}]interface{}
+	dataStruct map[string]interface{}
 }
 
 func convertFile(file InputFile, writer chan<- map[string]string) {
@@ -30,20 +30,20 @@ func GetInputFile() (InputFile, error) {
 
 // CheckFile checks if user has passed a file with correct extension and
 // if file exists
-func CheckFile(filename string) (bool, error) {
+func CheckFile(filename string) error {
 	_, err := isValidExtension(filename)
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	_, err = fileExists(filename)
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	return true, nil
+	return nil
 }
 
 func isValidExtension(filename string) (bool, error) {
@@ -57,6 +57,8 @@ func isValidExtension(filename string) (bool, error) {
 }
 
 func fileExists(filename string) (bool, error) {
+	fmt.Println(filename)
+
 	_, err := os.Stat(filename)
 
 	if err != nil && os.IsNotExist(err) {

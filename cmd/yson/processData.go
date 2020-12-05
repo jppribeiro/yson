@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 
@@ -25,6 +26,17 @@ func ProcessYAML(file InputFile) (InputFile, error) {
 	return file, nil
 }
 
+// ConvertToJSON takes a map and Marshals it into a json string
+func ConvertToJSON(file InputFile) (string, error) {
+	jsonString, err := json.Marshal(file.dataStruct)
+
+	if err != nil {
+		return "", fmt.Errorf("Could not convert to json. Error: %v", err)
+	}
+
+	return string(jsonString), nil
+}
+
 func readFileData(file InputFile) (InputFile, error) {
 	fileData, err := ioutil.ReadFile(file.path)
 
@@ -38,7 +50,7 @@ func readFileData(file InputFile) (InputFile, error) {
 }
 
 func unmarshallData(file InputFile) (InputFile, error) {
-	data := make(map[interface{}]interface{})
+	data := make(map[string]interface{})
 
 	err := yaml.Unmarshal(file.rawData, &data)
 
