@@ -38,8 +38,13 @@ go test yson.com/yson...
 ```
 ./yson <filename>.yaml
 ```
-or
+If you have the executable in your $PATH:
 ```
 yson <filename>.yaml
 ```
-If you have the executable in your $PATH.
+
+
+By default, the converted string is pretty printed. If you want the raw string, use the ```--raw``` flag:
+```
+yson --raw <filename>.yaml
+```

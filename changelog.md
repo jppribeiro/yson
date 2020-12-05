@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.3] - 05/12/2020
+
+* Implemented pretty print as default;
+* Implemented [--raw] option to print raw string
+
 ## [0.1.2] - 05/12/2020
 
 * Refactor project organization into different packages
