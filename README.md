@@ -30,7 +30,7 @@ go build ./cmd/yson
 ### Test
 
 ```
-go test ./cmd/yson
+go test yson.com/yson...
 ```
 
 ## Usage <a name = "usage"></a>
