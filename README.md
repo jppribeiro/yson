@@ -33,6 +33,19 @@ go build ./cmd/yson
 go test yson.com/yson...
 ```
 
+### Install
+
+From the project folder run:
+
+```
+go install yson.com/yson
+```
+Make sure ```GOPATH/bin``` is in your ```$PATH```. To check your ```GOPATH``` run:
+
+```
+go env GOPATH
+```
+
 ## Usage <a name = "usage"></a>
 
 ```

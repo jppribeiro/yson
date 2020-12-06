@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.0] - 05/12/2020
+
+* Implemented read data from Stdin
+
 ## [0.1.3] - 05/12/2020
 
 * Implemented pretty print as default;
