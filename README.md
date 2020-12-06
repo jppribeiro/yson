@@ -55,6 +55,11 @@ If you have the executable in your $PATH:
 ```
 yson <filename>.yaml
 ```
+You can also use a pipe to pass yaml data:
+
+```
+cat file.yaml | yson
+```
 ### Options
 [--raw] Prints the raw string instead of the default 'pretty' printed version.
 
