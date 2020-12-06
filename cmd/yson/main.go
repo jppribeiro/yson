@@ -1,16 +1,7 @@
 package main
 
-import (
-	"fmt"
-
-	"yson.com/yson/cmd/internal/input"
-	"yson.com/yson/cmd/internal/process"
-)
+import "yson.com/yson/cmd/internal/command"
 
 func main() {
-	fileData := input.FilePath()
-
-	result := process.Yaml(fileData)
-
-	fmt.Println(result)
+	command.Run()
 }

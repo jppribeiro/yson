@@ -35,7 +35,7 @@ func Test_FilePath(t *testing.T) {
 
 			os.Args = tt.osArgs
 
-			got := FilePath()
+			got := FilePath(false)
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getFileData() = %v, want %v", got, tt.want)

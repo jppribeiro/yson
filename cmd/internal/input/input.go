@@ -21,8 +21,8 @@ type FileData struct {
 // FilePath checks the file argument passed to the command and verifies if it
 // exists.
 // Initializes and returns a FileData struct
-func FilePath() FileData {
-	if len(os.Args) < 2 {
+func FilePath(isPipe bool) FileData {
+	if len(os.Args) < 2 && !isPipe {
 		rescuer.Exit(errors.New("specify a file to convert"))
 	}
 
@@ -30,11 +30,15 @@ func FilePath() FileData {
 
 	flag.Parse()
 
-	path := flag.Arg(0)
+	if !isPipe {
+		path := flag.Arg(0)
 
-	isValid(path)
+		isValid(path)
 
-	return FileData{path, *raw, nil, nil}
+		return FileData{path, *raw, nil, nil}
+	}
+
+	return FileData{"", *raw, nil, nil}
 }
 
 func isValid(filename string) {

@@ -23,7 +23,7 @@ func Test_unmarshallData(t *testing.T) {
 		},
 	}
 
-	args := input.FileData{"test.yaml", false, []byte(yamlData), nil}
+	args := input.FileData{Path: "test.yaml", Raw: false, RawData: []byte(yamlData), DataStruct: nil}
 
 	tests := []struct {
 		name    string

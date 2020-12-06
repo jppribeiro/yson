@@ -1,9 +1,10 @@
 package process
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"gopkg.in/yaml.v2"
 	"yson.com/yson/cmd/internal/input"
@@ -12,8 +13,8 @@ import (
 
 // Yaml reads file contents and unmarshalls into map[interface{}]interface{}
 // to be able to generate any map from any YAML structure
-func Yaml(file input.FileData) string {
-	file, err := readFileData(file)
+func Yaml(file input.FileData, reader io.Reader) string {
+	file, err := readFileData(file, reader)
 
 	rescuer.Check(err)
 
@@ -28,14 +29,16 @@ func Yaml(file input.FileData) string {
 	return json
 }
 
-func readFileData(file input.FileData) (input.FileData, error) {
-	fileData, err := ioutil.ReadFile(file.Path)
+func readFileData(file input.FileData, r io.Reader) (input.FileData, error) {
+	scanner := bufio.NewScanner(r)
 
-	if err != nil {
-		return input.FileData{}, fmt.Errorf("Error reading %v", file.Path)
+	output := ""
+
+	for scanner.Scan() {
+		output += scanner.Text() + "\n"
 	}
 
-	file.RawData = fileData
+	file.RawData = []byte(output)
 
 	return file, nil
 }
