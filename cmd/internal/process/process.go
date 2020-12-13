@@ -53,58 +53,54 @@ func unmarshallData(file input.FileData) (input.FileData, error) {
 		return input.FileData{}, fmt.Errorf("Error parsing YAML data in %v, with error %v", file.Path, err)
 	}
 
-	file.DataStruct = data
+	file.DataStruct = resolveMap(data)
 
 	return file, nil
 }
 
-func convertToJSON(file input.FileData) (string, error) {
-	jsonStr, err := resolveTree(file.DataStruct, file.Raw)
-
-	if err != nil {
-		return "", err
-	}
-
-	return jsonStr, nil
-}
-
-func resolveTree(data map[string]interface{}, raw bool) (string, error) {
+func resolveMap(data map[string]interface{}) map[string]interface{} {
 	res := make(map[string]interface{})
 
 	for k, v := range data {
-		if interfaceVal := reflect.ValueOf(v); interfaceVal.Kind() == reflect.Map {
+		interfaceVal := reflect.ValueOf(v)
+		kind := interfaceVal.Kind()
+
+		switch kind {
+		case reflect.Map:
 			innerMap := make(map[string]interface{})
 			for _, key := range interfaceVal.MapKeys() {
+				fmt.Println(interfaceVal.MapIndex(key))
 				innerMap[fmt.Sprintf("%v", key)] = interfaceVal.MapIndex(key).Interface()
 			}
 
-			val, err := resolveTree(innerMap, raw)
-			if err != nil {
-				return "", err
-			}
+			res[fmt.Sprintf("%v", k)] = resolveMap(innerMap)
+		case reflect.Array:
+			for el := range interfaceVal.Interface() {
 
-			res[fmt.Sprintf("%v", k)] = val
-		} else {
-			fmt.Println(v, reflect.TypeOf(v))
+			}
+		default:
 			res[fmt.Sprintf("%v", k)] = v
 		}
 	}
 
-	if raw {
-		fmt.Println(res)
-		jsonData, err := json.Marshal(res)
-		if err != nil {
-			return "", fmt.Errorf("Could not convert raw json: %v", err)
-		}
+	return res
+}
 
-		return string(jsonData), nil
+func convertToJSON(file input.FileData) (string, error) {
+	var jsonString []byte
+	var err error
+
+	if file.Raw {
+		jsonString, err = json.Marshal(file.DataStruct)
+	} else {
+		jsonString, err = json.MarshalIndent(file.DataStruct, "", "  ")
 	}
 
-	jsonData, err := json.MarshalIndent(res, "", "  ")
+	fmt.Println(reflect.TypeOf(file.DataStruct["c"]))
+
 	if err != nil {
-		return "", fmt.Errorf("Could not convert json: %v", err)
+		return "", fmt.Errorf("Could not convert to json. Error: %v", err)
 	}
 
-	return string(jsonData), nil
-
+	return string(jsonString), nil
 }
