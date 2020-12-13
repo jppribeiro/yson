@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 
 	"gopkg.in/yaml.v2"
 	"yson.com/yson/cmd/internal/input"
@@ -58,18 +59,52 @@ func unmarshallData(file input.FileData) (input.FileData, error) {
 }
 
 func convertToJSON(file input.FileData) (string, error) {
-	var jsonString []byte
-	var err error
-
-	if file.Raw {
-		jsonString, err = json.Marshal(file.DataStruct)
-	} else {
-		jsonString, err = json.MarshalIndent(file.DataStruct, "", "  ")
-	}
+	jsonStr, err := resolveTree(file.DataStruct, file.Raw)
 
 	if err != nil {
-		return "", fmt.Errorf("Could not convert to json. Error: %v", err)
+		return "", err
 	}
 
-	return string(jsonString), nil
+	return jsonStr, nil
+}
+
+func resolveTree(data map[string]interface{}, raw bool) (string, error) {
+	res := make(map[string]interface{})
+
+	for k, v := range data {
+		if interfaceVal := reflect.ValueOf(v); interfaceVal.Kind() == reflect.Map {
+			innerMap := make(map[string]interface{})
+			for _, key := range interfaceVal.MapKeys() {
+				innerMap[fmt.Sprintf("%v", key)] = interfaceVal.MapIndex(key).Interface()
+			}
+
+			val, err := resolveTree(innerMap, raw)
+			if err != nil {
+				return "", err
+			}
+
+			res[fmt.Sprintf("%v", k)] = val
+		} else {
+			fmt.Println(v, reflect.TypeOf(v))
+			res[fmt.Sprintf("%v", k)] = v
+		}
+	}
+
+	if raw {
+		fmt.Println(res)
+		jsonData, err := json.Marshal(res)
+		if err != nil {
+			return "", fmt.Errorf("Could not convert raw json: %v", err)
+		}
+
+		return string(jsonData), nil
+	}
+
+	jsonData, err := json.MarshalIndent(res, "", "  ")
+	if err != nil {
+		return "", fmt.Errorf("Could not convert json: %v", err)
+	}
+
+	return string(jsonData), nil
+
 }
