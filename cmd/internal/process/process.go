@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"reflect"
 
 	"gopkg.in/yaml.v2"
 	"yson.com/yson/cmd/internal/input"
@@ -52,9 +53,37 @@ func unmarshallData(file input.FileData) (input.FileData, error) {
 		return input.FileData{}, fmt.Errorf("Error parsing YAML data in %v, with error %v", file.Path, err)
 	}
 
-	file.DataStruct = data
+	file.DataStruct = resolveMap(data)
 
 	return file, nil
+}
+
+func resolveMap(data map[string]interface{}) map[string]interface{} {
+	res := make(map[string]interface{})
+
+	for k, v := range data {
+		interfaceVal := reflect.ValueOf(v)
+		kind := interfaceVal.Kind()
+
+		switch kind {
+		case reflect.Map:
+			innerMap := make(map[string]interface{})
+			for _, key := range interfaceVal.MapKeys() {
+				fmt.Println(interfaceVal.MapIndex(key))
+				innerMap[fmt.Sprintf("%v", key)] = interfaceVal.MapIndex(key).Interface()
+			}
+
+			res[fmt.Sprintf("%v", k)] = resolveMap(innerMap)
+		case reflect.Array:
+			for el := range interfaceVal.Interface() {
+
+			}
+		default:
+			res[fmt.Sprintf("%v", k)] = v
+		}
+	}
+
+	return res
 }
 
 func convertToJSON(file input.FileData) (string, error) {
@@ -66,6 +95,8 @@ func convertToJSON(file input.FileData) (string, error) {
 	} else {
 		jsonString, err = json.MarshalIndent(file.DataStruct, "", "  ")
 	}
+
+	fmt.Println(reflect.TypeOf(file.DataStruct["c"]))
 
 	if err != nil {
 		return "", fmt.Errorf("Could not convert to json. Error: %v", err)
