@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.2.1] - 15/12/2020
+
+* Fixed a bug occurring from trying to Marshal a map[interface{}]interface{} to json when reachin inner data structures
 ## [0.2.0] - 05/12/2020
 
 * Implemented read data from Stdin
