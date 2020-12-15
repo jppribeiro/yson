@@ -45,7 +45,7 @@ func readFileData(file input.FileData, r io.Reader) (input.FileData, error) {
 }
 
 func unmarshallData(file input.FileData) (input.FileData, error) {
-	data := make(map[string]interface{})
+	data := make(map[interface{}]interface{})
 
 	err := yaml.Unmarshal(file.RawData, &data)
 
@@ -58,7 +58,7 @@ func unmarshallData(file input.FileData) (input.FileData, error) {
 	return file, nil
 }
 
-func resolveMap(data map[string]interface{}) map[string]interface{} {
+func resolveMap(data map[interface{}]interface{}) map[string]interface{} {
 	res := make(map[string]interface{})
 
 	for k, v := range data {
@@ -67,23 +67,43 @@ func resolveMap(data map[string]interface{}) map[string]interface{} {
 
 		switch kind {
 		case reflect.Map:
-			innerMap := make(map[string]interface{})
+			innerMap := make(map[interface{}]interface{})
 			for _, key := range interfaceVal.MapKeys() {
 				fmt.Println(interfaceVal.MapIndex(key))
 				innerMap[fmt.Sprintf("%v", key)] = interfaceVal.MapIndex(key).Interface()
 			}
 
 			res[fmt.Sprintf("%v", k)] = resolveMap(innerMap)
-		case reflect.Array:
-			for el := range interfaceVal.Interface() {
-
-			}
+		case reflect.Slice:
+			slice := interfaceVal.Slice(0, interfaceVal.Len()).Interface().([]interface{})
+			res[fmt.Sprintf("%v", k)] = resolveArray(slice)
 		default:
 			res[fmt.Sprintf("%v", k)] = v
 		}
 	}
 
 	return res
+}
+
+func resolveArray(arr []interface{}) []interface{} {
+	out := make([]interface{}, len(arr))
+
+	for i, el := range arr {
+		kind := reflect.TypeOf(el).Kind()
+
+		switch kind {
+		case reflect.Map:
+			mapElem := el.(map[interface{}]interface{})
+			out[i] = resolveMap(mapElem)
+		case reflect.Slice:
+			sliceElem := el.([]interface{})
+			out[i] = resolveArray(sliceElem)
+		default:
+			out[i] = el
+		}
+	}
+
+	return out
 }
 
 func convertToJSON(file input.FileData) (string, error) {
