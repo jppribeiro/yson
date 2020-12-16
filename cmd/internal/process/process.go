@@ -69,7 +69,6 @@ func resolveMap(data map[interface{}]interface{}) map[string]interface{} {
 		case reflect.Map:
 			innerMap := make(map[interface{}]interface{})
 			for _, key := range interfaceVal.MapKeys() {
-				fmt.Println(interfaceVal.MapIndex(key))
 				innerMap[fmt.Sprintf("%v", key)] = interfaceVal.MapIndex(key).Interface()
 			}
 
@@ -115,8 +114,6 @@ func convertToJSON(file input.FileData) (string, error) {
 	} else {
 		jsonString, err = json.MarshalIndent(file.DataStruct, "", "  ")
 	}
-
-	fmt.Println(reflect.TypeOf(file.DataStruct["c"]))
 
 	if err != nil {
 		return "", fmt.Errorf("Could not convert to json. Error: %v", err)
