@@ -12,6 +12,13 @@ a: Easy!
 b:
   c: 2
   d: [3, 4]
+  e:
+    f: 5
+    g:
+      - h: 6
+      - 7
+      - - 8
+        - 9
 `
 
 func Test_unmarshallData(t *testing.T) {
@@ -20,6 +27,14 @@ func Test_unmarshallData(t *testing.T) {
 		"b": map[string]interface{}{
 			"c": 2,
 			"d": []int{3, 4},
+			"e": map[string]interface{}{
+				"f": 5,
+				"g": []interface{}{
+					map[string]int{"h": 6},
+					7,
+					[]int{8, 9},
+				},
+			},
 		},
 	}
 
