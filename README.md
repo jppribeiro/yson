@@ -38,7 +38,7 @@ go test yson.com/yson...
 From the project folder run:
 
 ```
-go install yson.com/yson
+go install yson.com/yson...
 ```
 Make sure ```GOPATH/bin``` is in your ```$PATH```. To check your ```GOPATH``` run:
 
