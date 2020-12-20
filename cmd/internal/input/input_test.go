@@ -8,7 +8,22 @@ import (
 )
 
 func Test_FilePath(t *testing.T) {
+	var content = `
+a: Easy!
+b:
+  c: 2
+  d: [3, 4]
+  e:
+    f: 5
+    g:
+      - h: 6
+      - 7
+      - - 8
+        - 9
+`
 	temp, _ := os.Create("test.yml")
+
+	temp.Write([]byte(content))
 
 	temp.Close()
 
@@ -20,8 +35,8 @@ func Test_FilePath(t *testing.T) {
 		wantErr bool
 		osArgs  []string
 	}{
-		{"Default arguments", FileData{"test.yml", false, nil, nil}, false, []string{"cmd", "test.yml"}},
-		{"With <raw> flag", FileData{"test.yml", true, nil, nil}, false, []string{"cmd", "--raw", "test.yml"}},
+		{"Default arguments with a .yml", FileData{InputYaml, "test.yml", false, []byte(content), nil}, false, []string{"cmd", "test.yml"}},
+		{"With <raw> flag", FileData{InputYaml, "test.yml", true, []byte(content), nil}, false, []string{"cmd", "--raw", "test.yml"}},
 	}
 	for _, tt := range tests {
 
@@ -35,7 +50,7 @@ func Test_FilePath(t *testing.T) {
 
 			os.Args = tt.osArgs
 
-			got := FilePath(false)
+			got := FilePath()
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getFileData() = %v, want %v", got, tt.want)
@@ -56,6 +71,7 @@ func Test_isValidExtension(t *testing.T) {
 	}{
 		{"Valid extension .yaml", args{"test.yaml"}, true, false},
 		{"Valid extension .yml", args{"test.yml"}, true, false},
+		{"Valid extension .json", args{"test.json"}, true, false},
 		{"Invalid extension .xyz", args{"test.xyz"}, false, true},
 	}
 	for _, tt := range tests {
