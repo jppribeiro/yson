@@ -46,7 +46,7 @@ func Test_unmarshallData(t *testing.T) {
 		want    input.FileData
 		wantErr bool
 	}{
-		{"With good yaml - pretty", args, input.FileData{"test.yaml", false, []byte(yamlData), wanted}, false},
+		{"With good yaml - pretty", args, input.FileData{input.InputYaml, "test.yaml", false, []byte(yamlData), wanted}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -91,8 +91,8 @@ func TestConvertToJSON(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		{"Converts map to string - pretty", args{input.FileData{"test.yaml", false, []byte{}, data}}, "{\n  \"a\": \"test\",\n  \"b\": [\n    1,\n    2\n  ]\n}", false},
-		{"Converts map to string - raw", args{input.FileData{"test.yaml", true, []byte{}, data}}, "{\"a\":\"test\",\"b\":[1,2]}", false},
+		{"Converts map to string - pretty", args{input.FileData{input.InputYaml, "test.yaml", false, []byte{}, data}}, "{\n  \"a\": \"test\",\n  \"b\": [\n    1,\n    2\n  ]\n}", false},
+		{"Converts map to string - raw", args{input.FileData{input.InputYaml, "test.yaml", true, []byte{}, data}}, "{\"a\":\"test\",\"b\":[1,2]}", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

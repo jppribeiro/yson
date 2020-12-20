@@ -14,18 +14,18 @@ import (
 
 // FileData defines the structure of a file and options to convert
 type FileData struct {
-	Type       fileType
+	Type       FileType
 	Path       string
 	Raw        bool
 	RawData    []byte
 	DataStruct map[string]interface{}
 }
 
-type fileType string
+type FileType string
 
 const (
-	inputJSON fileType = "json"
-	inputYaml fileType = "yaml"
+	InputJSON FileType = "json"
+	InputYaml FileType = "yaml"
 )
 
 // FilePath checks the file argument passed to the command and verifies if it
@@ -54,7 +54,10 @@ func FilePath() FileData {
 		defer reader.Close()
 	}
 
-	rawData := readFileData(reader)
+	rawData, err := readFileData(reader)
+
+	rescuer.Check(err)
+
 	fileType := resolveFileType(rawData)
 
 	return FileData{Type: fileType, Path: path, Raw: *raw, RawData: rawData, DataStruct: nil}
@@ -73,11 +76,15 @@ func validate(filename string) {
 func isValidExtension(filename string) (bool, error) {
 	extension := filepath.Ext(filename)
 
-	if extension != ".yaml" && extension != ".yml" {
-		return false, fmt.Errorf("File %v is not a YAML", filename)
+	validExt := []string{".yaml", ".yml", ".json"}
+
+	for _, ext := range validExt {
+		if extension == ext {
+			return true, nil
+		}
 	}
 
-	return true, nil
+	return false, fmt.Errorf("File %v is not a YAML or JSON", filename)
 }
 
 func fileExists(filename string) (bool, error) {
@@ -90,7 +97,7 @@ func fileExists(filename string) (bool, error) {
 	return true, nil
 }
 
-func readFileData(r io.Reader) []byte {
+func readFileData(r io.Reader) ([]byte, error) {
 	scanner := bufio.NewScanner(r)
 
 	output := ""
@@ -99,16 +106,20 @@ func readFileData(r io.Reader) []byte {
 		output += scanner.Text() + "\n"
 	}
 
-	return []byte(output)
-}
-
-func resolveFileType(rawData []byte) fileType {
-	// 123 = {   91 = [
-	if rawData[0] == 123 || rawData[0] == 91 {
-		return inputJSON
+	if len(output) == 0 {
+		return []byte{}, fmt.Errorf("File is empty")
 	}
 
-	return inputYaml
+	return []byte(output), nil
+}
+
+func resolveFileType(rawData []byte) FileType {
+	// 123 = {   91 = [
+	if rawData[0] == 123 || rawData[0] == 91 {
+		return InputJSON
+	}
+
+	return InputYaml
 }
 
 func isPipe() bool {
