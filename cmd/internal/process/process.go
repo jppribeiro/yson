@@ -30,19 +30,7 @@ func Yaml(file input.FileData, reader io.Reader) string {
 	return json
 }
 
-func readFileData(file input.FileData, r io.Reader) (input.FileData, error) {
-	scanner := bufio.NewScanner(r)
 
-	output := ""
-
-	for scanner.Scan() {
-		output += scanner.Text() + "\n"
-	}
-
-	file.RawData = []byte(output)
-
-	return file, nil
-}
 
 func unmarshallData(file input.FileData) (input.FileData, error) {
 	data := make(map[interface{}]interface{})
