@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"os"
 
 	"yson.com/yson/cmd/internal/input"
 	"yson.com/yson/cmd/internal/process"
@@ -10,13 +9,9 @@ import (
 
 // Run executes the command
 func Run() {
+	fileData := input.FilePath()
 
-
-	fileData := input.FilePath(isPipe)
-
-	result := process.Yaml(fileData, reader)
+	result := process.Yaml(fileData)
 
 	fmt.Println(result)
 }
-
-

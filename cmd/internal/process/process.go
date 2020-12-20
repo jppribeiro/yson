@@ -1,10 +1,8 @@
 package process
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
-	"io"
 	"reflect"
 
 	"gopkg.in/yaml.v2"
@@ -14,12 +12,8 @@ import (
 
 // Yaml reads file contents and unmarshalls into map[interface{}]interface{}
 // to be able to generate any map from any YAML structure
-func Yaml(file input.FileData, reader io.Reader) string {
-	file, err := readFileData(file, reader)
-
-	rescuer.Check(err)
-
-	file, err = unmarshallData(file)
+func Yaml(file input.FileData) string {
+	file, err := unmarshallData(file)
 
 	rescuer.Check(err)
 
@@ -29,8 +23,6 @@ func Yaml(file input.FileData, reader io.Reader) string {
 
 	return json
 }
-
-
 
 func unmarshallData(file input.FileData) (input.FileData, error) {
 	data := make(map[interface{}]interface{})
