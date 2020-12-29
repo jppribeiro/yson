@@ -10,10 +10,10 @@ import (
 	"yson.com/yson/cmd/internal/rescuer"
 )
 
-// Yaml reads file contents and unmarshalls into map[interface{}]interface{}
+// ReadYAML reads file contents and unmarshalls into map[interface{}]interface{}
 // to be able to generate any map from any YAML structure
-func Yaml(file input.FileData) string {
-	file, err := unmarshallData(file)
+func ReadYAML(file input.FileData) string {
+	file, err := unmarshallYAML(file)
 
 	rescuer.Check(err)
 
@@ -24,7 +24,7 @@ func Yaml(file input.FileData) string {
 	return json
 }
 
-func unmarshallData(file input.FileData) (input.FileData, error) {
+func unmarshallYAML(file input.FileData) (input.FileData, error) {
 	data := make(map[interface{}]interface{})
 
 	err := yaml.Unmarshal(file.RawData, &data)
