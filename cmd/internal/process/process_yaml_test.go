@@ -21,7 +21,7 @@ b:
         - 9
 `
 
-func Test_unmarshallData(t *testing.T) {
+func Test_unmarshallYAML(t *testing.T) {
 	wanted := map[string]interface{}{
 		"a": "Easy!",
 		"b": map[string]interface{}{
@@ -50,7 +50,7 @@ func Test_unmarshallData(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := unmarshallYaml(tt.args)
+			got, err := unmarshallYAML(tt.args)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("unmarshallData() error = %v, wantErr %v", err, tt.wantErr)
 				return
