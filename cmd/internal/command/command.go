@@ -11,7 +11,7 @@ import (
 func Run() {
 	fileData := input.FilePath()
 
-	result := process.Yaml(fileData)
+	result := process.Translate(fileData)
 
 	fmt.Println(result)
 }
